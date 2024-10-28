@@ -453,10 +453,18 @@
     ]
     #context [
       #let name = format-name(name)
-      #timed(time)[
-        #let x-of-y = "(" + str(pres.get().len()) + " / " + str(pres.get().len() - away.get().len()) + ")"
+      #let x-of-y = "(" + str(pres.get().len() - away.get().len()) + " / " + str(pres.get().len()) + ")"
+      #let statement = [
         _#name-format(name) #translate("JOIN" + if (long) {"_LONG"}, x-of-y)_
       ]
+
+      #if (time == none) {
+        statement
+      } else {
+        timed(time)[
+          #statement
+        ]
+      }
     ]
   ]
   
@@ -519,10 +527,18 @@
     ]
     #context [  
       #let name = format-name(name)
-      #timed(time)[ 
-        #let x-of-y = "(" + str(pres.get().len()) + " / " + str(pres.get().len() - away.get().len()) + ")"
+      #let x-of-y = "(" + str(pres.get().len()) + " / " + str(pres.get().len() + away.get().len()) + ")"
+      #let statement = [
         _#name-format(name) #translate("LEAVE" + if (long) {"_LONG"}, x-of-y)_
       ]
+
+      #if (time == none) {
+        statement
+      } else {
+        timed(time)[
+          #statement
+        ]
+      }
     ]
   ]
 
@@ -546,9 +562,15 @@
       )
     }
     #block(breakable: false)[
-      #timed(time)[
-        ===== #translate("DECISION")
-      ]
+      #if (time == none) {
+        [
+          ===== #translate("DECISION")
+        ]
+      } else {
+        timed(time)[
+          ===== #translate("DECISION")
+        ]
+      }
       #content
       #let total = values.map(x => x.value).sum(default: 1)
         
@@ -592,12 +614,18 @@
   let regex-time-format = "[0-9]{1,5}"
   let regex-name-format = "-?(" + royalty-connectors.join(" |") + " )?(\p{Lu})[^" + non-name-characters + "]*( " + royalty-connectors.join("| ") + ")?( (\p{Lu}|[0-9]+)[^" + non-name-characters + "]*)*"
   let default-format = regex-time-format + "/[^\n]*"
+  let optional-time-format = "(" + regex-time-format + "/)?[^\n]*"
 
-  let default-regex(keyword, function, body) = [
-    #show regex("^" + keyword.replace("+", "\+") + default-format): it => [
+  let default-regex(keyword, function, body, time-optional: false) = [
+    #show regex("^" + keyword.replace("+", "\+") + if (time-optional) {optional-time-format} else {default-format}): it => [
       #let text = it.text.slice(keyword.len())
       #let time = text.split("/").at(0)
       #let string = text.split("/").slice(1).join("/")
+
+      #if (time-optional and time.match(regex(regex-time-format)) == none) {
+        string = time
+        time = none
+      }
     
       #function(time, string)
     ]
@@ -605,21 +633,29 @@
     #body
   ]
 
-  show: default-regex.with("+", join)
-  show: default-regex.with("−", leave)
-  show: default-regex.with("++", join.with(long: true))
-  show: default-regex.with("–", leave.with(long: true))
+  show: default-regex.with("+", join, time-optional: true)
+  show: default-regex.with("-", leave, time-optional: true)
+  show: default-regex.with("−", leave, time-optional: true)
+  show: default-regex.with("++", join.with(long: true), time-optional: true)
+  show: default-regex.with("–", leave.with(long: true), time-optional: true)
   show: default-regex.with("", timed)
 
   show regex("^/" + regex-time-format): it => {
     end(it.text.slice(1))
   }
 
-  show regex("^!" + regex-time-format + "/.*/(.*(|.*)?[0-9]+){2,}"): it => [
+  show regex("^!(" + regex-time-format + "/)?.*/(.*(|.*)?[0-9]+){2,}"): it => [
     #let text = it.text.slice(1)
     #let time = text.split("/").at(0)
 
-    #let args = text.split("/").slice(2).enumerate().fold((:), (args, x) => {
+    #let args-slice = 2
+
+    #if (time.match(regex(regex-time-format)) == none) {
+      time = none
+      args-slice = 1
+    }
+
+    #let args = text.split("/").slice(args-slice).enumerate().fold((:), (args, x) => {
       let label = x.at(1).replace(regex("[0-9]"), "")
       let value = x.at(1).replace(label, "")
 
@@ -646,7 +682,7 @@
       return args;
     })
     
-    #let text = text.split("/").at(1)
+    #let text = text.split("/").at(args-slice - 1)
 
     #if (args.len() == 3
       and args.keys().enumerate()
@@ -850,7 +886,7 @@
     }
     *#translate("PRESENT")*:
     #v(-0.5em)
-    #let join-long-regex = "\n++" + default-format
+    #let join-long-regex = "\n++" + optional-time-format
     
     #let body-string = body.children.map(i => {
       let body = if (i.has("body")) {i.body} else {i}
@@ -869,12 +905,20 @@
       #all.update(present)
       #let arrives-later = (:)
       #for match in matches {
-        let last-time = time-matches.filter(x => x.end < match.start).last().text.slice(0, -1)
         
         let split = match.text.split("/")
-        let time = format-time(split.at(0).slice(3), hours-manual: last-time.slice(0, 2))
-        let name = format-name(split.at(1))
-        arrives-later.insert(name, time)
+
+        if (split.len() == 1) {
+          let time = none
+          let name = format-name(split.at(0).slice(3))
+          arrives-later.insert(name, time)
+        } else {
+          let last-time = time-matches.filter(x => x.end < match.start).last().text.slice(0, -1)
+
+          let time = format-time(split.at(0).slice(3), hours-manual: last-time.slice(0, 2))
+          let name = format-name(split.at(1))
+          arrives-later.insert(name, time)
+        }
       }
       
       #let filtered = present.filter(x => not 
@@ -887,7 +931,11 @@
         ..present.map(x => {
           name-format(x)
           if (show-arrival-time and arrives-later.keys().contains(x)) {
-            [ (#translate("SINCE") #box[#arrives-later.at(x)])]
+            if (arrives-later.at(x) == none) {
+              [ (#translate("DURING_EVENT"))]
+            } else {
+              [ (#translate("SINCE") #box[#arrives-later.at(x)])]
+            }
           }
         })
       )

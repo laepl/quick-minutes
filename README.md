@@ -77,11 +77,11 @@ With Quick Minutes you can record any meeting event by just typing it out. No fu
 
 | name | format | description |
 |---|---|---|
-Join | +\<time>/\<name><br>++\<time>/\<name> | Marks the arrival of someone<br>+: Come back from pause etc.<br>++: Arrive at event
-Leave | -\<time>/\<name><br>--\<time>/\<name> | Marks the departure of someone.<br>-: Leave into pause etc.<br>--: Leave event
+Join | +(\<time>/)?\<name><br>++(\<time>/)?\<name> | Marks the arrival of someone<br>+: Come back from pause etc.<br>++: Arrive at event<br><br>_Time is optional_
+Leave | -(\<time>/)?\<name><br>--(\<time>/)?\<name> | Marks the departure of someone.<br>-: Leave into pause etc.<br>--: Leave event<br><br>_Time is optional_
 Time | \<time>/\<text> | Time the following text
 Mark Name | /\<name> | Marks following name
-Vote | !\<time>/\<text>/\<vote>/\<vote>... | Vote on something (described in text)<br><br>/\<vote> can be repeated as many times as needed (min. 2)<br>3 unnamed & uncolored votes will result in a "For" (green), "Against" (red), "Abstain" (blue) vote
+Vote | !(\<time>/)?\<text>/\<vote>/\<vote>... | Vote on something (described in text)<br><br>/\<vote> can be repeated as many times as needed (min. 2)<br>3 unnamed & uncolored votes will result in a "For" (green), "Against" (red), "Abstain" (blue) vote<br><br>_Time is optional_
 
 ### Formats
 
