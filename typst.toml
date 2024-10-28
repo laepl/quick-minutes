@@ -6,6 +6,7 @@ description = "A typst template for the keeping of minutes."
 disciplines = ["business", "communication", "education", "journalism", "law"]
 entrypoint = "quick-minutes.typ"
 exclude = ["name-test.typ"]
+homepage = "https://github.com/Lypsilonx/quick-minutes"
 keywords = ["protocol", "minutes", "time", "timekeeping", "recording", "record"]
 license = "MIT"
 name = "quick-minutes"
