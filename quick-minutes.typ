@@ -871,13 +871,15 @@
         }
       }
     }
+    
     #if (present.dedup().len() != present.len()) {
       add-warning("multiple people with the same name are present")
     }
+    
     *#translate("PRESENT")*:
     #v(-0.5em)
-    #let join-long-regex = "\n++" + optional-time-format
     
+
     #let body-string = body.children.map(i => {
       let body = if (i.has("body")) {i.body} else {i}
       
@@ -887,8 +889,9 @@
       body-string = ""
     }
     
-    #let matches = body-string.matches(regex(join-long-regex.replace("+", "\+")))
+    #let join-long-regex = "\n++" + optional-time-format
 
+    #let matches = body-string.matches(regex(join-long-regex.replace("+", "\+")))
     #let time-matches = body-string.matches(regex(regex-time-format + "/")).filter(x => x.text.len() >= 4)
     
     #context[
@@ -930,9 +933,11 @@
         })
       )
     ]
+    
     #if (old-present == ()) {
       add-warning("present not set")
     }
+
     #if (number-present) [
       *#translate("PRESENT_COUNT")*: #present.len()
     ]
