@@ -1,5 +1,5 @@
 [package]
-authors = ["@katharinathoele", "@Lypsilonx"]
+authors = ["Katharina Thöle <@katharinathoele>", "Lyx Rothböck <@Lypsilonx>"]
 categories = ["layout"]
 compiler = "0.12"
 description = "A typst template for the keeping of minutes."
