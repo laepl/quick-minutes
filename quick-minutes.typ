@@ -15,7 +15,11 @@
   cosigner: none,
   cosigner-name: none,
 
-  custom-name-format: (name) => [#name],
+  custom-name-format: (first-name, last-name, numbered) => [
+    #if (numbered) [#first-name #last-name] else [
+      #if (last-name != none) [#last-name, ]#first-name
+    ]
+  ],
   item-numbering: none,
   time-format: none,
   date-format: none,
@@ -251,16 +255,19 @@
   let royalty-connectors = royalty-connectors.dedup()
 
   let name-format(name) = {
+    let first-name = name
+    let last-name = none
+    let numbered = false
     if (name.contains(", ")) {
       let split = name.split(", ")
-      if (split.at(0).match(regex("[0-9]+")) != none) {
-        name = split.at(1) + " " + split.at(0)
-      }
+      first-name = split.at(1)
+      last-name = split.at(0)
+      numbered = split.at(0).match(regex("[0-9]+")) != none
     }
 
     return [
       #show "???": set text(fill: red)
-      #custom-name-format(name)
+      #custom-name-format(first-name, last-name, numbered)
     ]
   }
 
