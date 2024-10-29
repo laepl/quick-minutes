@@ -611,7 +611,7 @@
 
   // Regex
   let non-name-characters = " .:;?!"
-  let regex-time-format = "[0-9]{1,5}"
+  let regex-time-format = "[0-9]{1,4}"
   let regex-name-format = "-?(" + royalty-connectors.join(" |") + " )?(\p{Lu})[^" + non-name-characters + "]*( " + royalty-connectors.join("| ") + ")?( (\p{Lu}|[0-9]+)[^" + non-name-characters + "]*)*"
   let default-format = regex-time-format + "/[^\n]*"
   let optional-time-format = "(" + regex-time-format + "/)?[^\n]*"
