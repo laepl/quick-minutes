@@ -13,7 +13,7 @@
     "Protokoll, Antin",
     "Günthers, Günther",
   ),
-  custom-name-format: noun,
+  custom-name-style: noun,
   display-all-warnings: true,
   enable-help-text: true,
   translation-overrides: ("ITEM": "Punkt"),

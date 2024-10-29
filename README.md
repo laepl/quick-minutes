@@ -50,6 +50,7 @@ With Quick Minutes you can record any meeting event by just typing it out. No fu
 | customisation |
 ||
 || custom-name-format | Formatting of names in the document | <pre>(first-name, last-name, numbered) => [<br>&nbsp;#if (numbered) [#first-name #last-name] else [<br>&nbsp;&nbsp;#if (last-name != none) [#last-name, ]#first-name]<br>]</pre> | `function(string)`
+|| custom-name-style | Style of names in the document | <pre>(name) => [name] | `function(string)`
 || item-numbering | Numbering of items. Reverts to `DEFAULT_ITEM_NUMBERING` if `none`.  | `none` | `function(..int)`
 || time-format | Datetime format `string` for times taken. Reverts to `DEFAULT_TIME_FORMAT` if `none`. | `none` | `string`
 || date-format | Datetime format `string` for the date of the event. Reverts to `DEFAULT_DATE_FORMAT` if `none`.| `none` | `string`

@@ -20,6 +20,7 @@
       #if (last-name != none) [#last-name, ]#first-name
     ]
   ],
+  custom-name-style: (name) => name,
   item-numbering: none,
   time-format: none,
   date-format: none,
@@ -267,7 +268,7 @@
 
     return [
       #show "???": set text(fill: red)
-      #custom-name-format(first-name, last-name, numbered)
+      #custom-name-style(custom-name-format(first-name, last-name, numbered))
     ]
   }
 
