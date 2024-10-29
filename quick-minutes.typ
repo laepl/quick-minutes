@@ -707,7 +707,6 @@
   ]
 
   // Setup
-  
   set page(
     header: [
       #if (date == none) {
@@ -975,6 +974,7 @@
     numbering-scope: "page"
   )
 
+  //Hauptteil
   {
     show regex("(.)?" + regex-name-format + "[^-]: "): it => {
       context {
@@ -1032,10 +1032,10 @@
       [:]
     }
   
-    //Hauptteil
     body
   }
   
+  //Schluss
   set par.line(
     number-clearance: 200pt
   )
@@ -1045,11 +1045,6 @@
       add-warning(str(count-away) + " people are still away (-), but the document ended")
     }
   }
-  
-  //Schluss
-  set par.line(
-    number-clearance: 200pt
-  )
   
   help-text()
   
