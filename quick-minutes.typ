@@ -453,9 +453,8 @@
     ]
     #context [
       #let name = format-name(name)
-      #let x-of-y = "(" + str(pres.get().len() - away.get().len()) + " / " + str(pres.get().len()) + ")"
       #let statement = [
-        _#name-format(name) #translate("JOIN" + if (long) {"_LONG"}, x-of-y)_
+        _#name-format(name) #translate("JOIN" + if (long) {"_LONG"}, str(pres.get().len() - away.get().len()), str(pres.get().len()))_
       ]
 
       #if (time == none) {
@@ -527,9 +526,8 @@
     ]
     #context [  
       #let name = format-name(name)
-      #let x-of-y = "(" + str(pres.get().len()) + " / " + str(pres.get().len() + away.get().len()) + ")"
       #let statement = [
-        _#name-format(name) #translate("LEAVE" + if (long) {"_LONG"}, x-of-y)_
+        _#name-format(name) #translate("LEAVE" + if (long) {"_LONG"}, str(pres.get().len()), str(pres.get().len() + away.get().len()))_
       ]
 
       #if (time == none) {

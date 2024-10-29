@@ -76,20 +76,20 @@
     "de": "Enthaltung"
   },
   "JOIN": {
-    "en": "comes back: [0] present",
-    "de": "kommt zurück: [0] Anwesend"
+    "en": "comes back: ([0] / [1]) present",
+    "de": "kommt zurück: ([0] / [1]) Anwesend"
   },
   "JOIN_LONG": {
-    "en": "arrives at the meeting: [0] present",
-    "de": "meldet sich an: [0] Anwesend"
+    "en": "arrives at the meeting: ([0] / [1]) present",
+    "de": "meldet sich an: ([0] / [1]) Anwesend"
   },
   "LEAVE": {
-    "en": "leaves: [0] present",
-    "de": "geht kurz: [0] Anwesend"
+    "en": "leaves: ([0] / [1]) present",
+    "de": "geht kurz: ([0] / [1]) Anwesend"
   },
   "LEAVE_LONG": {
-    "en": "leaves the meeting: [0] present",
-    "de": "verlässt die Sitzung-: [0] Anwesend"
+    "en": "leaves the meeting: ([0] / [1]) present",
+    "de": "verlässt die Sitzung-: ([0] / [1]) Anwesend"
   },
   "SIGNATURE_PRE": {
     "en": "This protocol is hereby approved",
