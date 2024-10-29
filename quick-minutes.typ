@@ -627,7 +627,7 @@
       #let time = text.split("/").at(0)
       #let string = text.split("/").slice(1).join("/")
 
-      #if (time-optional and time.match(regex(regex-time-format)) == none) {
+      #if (time-optional and time.match(regex("^" + regex-time-format + "$")) == none) {
         string = time
         time = none
       }
@@ -655,7 +655,7 @@
 
     #let args-slice = 2
 
-    #if (time.match(regex(regex-time-format)) == none) {
+    #if (time.match(regex("^" + regex-time-format + "$")) == none) {
       time = none
       args-slice = 1
     }
