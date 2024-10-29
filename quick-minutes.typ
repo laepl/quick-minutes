@@ -793,22 +793,6 @@
   ]
 
   // Protokollkopf
-  let start-time-string = context {
-    let start-time = start-time.final()
-    if (start-time == none) {
-      "XX:XX"
-    } else {
-      four-digits-to-time(start-time)
-    }
-  }
-  let end-time-string = context {
-    let end-time = last-time.final()
-    if (end-time == none) {
-      "XX:XX"
-    } else {
-      four-digits-to-time(end-time)
-    }
-  }
   [
     *#translate("CHAIR")*: #if (chairperson == none) {
       name-format("MISSING")
@@ -952,12 +936,16 @@
     #if (number-present) [
       *#translate("PRESENT_COUNT")*: #present.len()
     ]
-  
-    *#translate("START")*: #start-time-string\
-    *#translate("END")*: #end-time-string
+    #context {
+      let start-time = start-time.final()
+      if (start-time != none) [*#translate("START")*: #four-digits-to-time(start-time)\ ]
+      
+      let end-time = last-time.final()
+      if (end-time != none) [*#translate("END")*: #four-digits-to-time(end-time)]
+    }
   ]
 
-  pad(y: 2em)[
+  pad(y: 1.5em)[
     #show outline.entry.where(level: 1): it => {
       v(0em)
       it
@@ -967,7 +955,13 @@
   if (title-page) {
     pagebreak()
   }
-  timed(start-time-string, [==== #translate("START")])
+  context {
+    let start-time = start-time.final()
+    if (start-time == none) [==== #translate("START")]
+    else {
+      timed(start-time, [==== #translate("START")])
+    }
+  }
   
   set par.line(
     numbering: x => {
