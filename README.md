@@ -5,7 +5,7 @@ With Quick Minutes you can record any meeting event by just typing it out. No fu
 ## Usage
 
 ### Import & Initialisation
-```
+```typ
 #import "@preview/quick-minutes:1.1.0": *
 
 #show: minutes.with(
@@ -49,7 +49,7 @@ With Quick Minutes you can record any meeting event by just typing it out. No fu
 || cosigner-name | Name of the person signing the protocol, should they differ from the chairperson. | `none` | `string`
 | customisation |
 ||
-|| custom-name-format | Formatting of names in the document | `(first-name, last-name, numbered) => [#if (numbered) [#first-name #last-name] else [#if (last-name != none) [#last-name, ]#first-name]]` | `function(string)`
+|| custom-name-format | Formatting of names in the document | <pre>(first-name, last-name, numbered) => [<br>&nbsp;#if (numbered) [#first-name #last-name] else [<br>&nbsp;&nbsp;#if (last-name != none) [#last-name, ]#first-name]<br>]</pre> | `function(string)`
 || item-numbering | Numbering of items. Reverts to `DEFAULT_ITEM_NUMBERING` if `none`.  | `none` | `function(..int)`
 || time-format | Datetime format `string` for times taken. Reverts to `DEFAULT_TIME_FORMAT` if `none`. | `none` | `string`
 || date-format | Datetime format `string` for the date of the event. Reverts to `DEFAULT_DATE_FORMAT` if `none`.| `none` | `string`
@@ -77,18 +77,18 @@ With Quick Minutes you can record any meeting event by just typing it out. No fu
 
 | name | format | description |
 |---|---|---|
-Join | +(\<time>/)?\<name><br>++(\<time>/)?\<name> | Marks the arrival of someone<br>+: Come back from pause etc.<br>++: Arrive at event<br><br>_Time is optional_
-Leave | -(\<time>/)?\<name><br>--(\<time>/)?\<name> | Marks the departure of someone.<br>-: Leave into pause etc.<br>--: Leave event<br><br>_Time is optional_
-Time | \<time>/\<text> | Time the following text
-Mark Name | /\<name> | Marks following name
-Vote | !(\<time>/)?\<text>/\<vote>/\<vote>... | Vote on something (described in text)<br><br>/\<vote> can be repeated as many times as needed (min. 2)<br>3 unnamed & uncolored votes will result in a "For" (green), "Against" (red), "Abstain" (blue) vote<br><br>If you want to use `/` inside of a label or the text, you can use `-/` to escape into a normal `/`<br><br>_Time is optional_
-Dialogue | \<name>: \<text> | Marks that someone is speaking<br><br>Can be escaped with a `-` (`<name>-:`) to avoid restructuring
-End | /\<time> | End of the meeting |
+Join | <pre>+(\<time>/)?\<name><br>++(\<time>/)?\<name> | Marks the arrival of someone<br>+: Come back from pause etc.<br>++: Arrive at event<br><br>_Time is optional_
+Leave | <pre>-(\<time>/)?\<name><br>--(\<time>/)?\<name> | Marks the departure of someone.<br>-: Leave into pause etc.<br>--: Leave event<br><br>_Time is optional_
+Time | <pre>\<time>/\<text> | Time the following text
+Mark Name | <pre>/\<name> | Marks following name
+Vote | <pre>!(\<time>/)?\<text>/\<vote>/\<vote>... | Vote on something (described in text)<br><br>/\<vote> can be repeated as many times as needed (min. 2)<br>3 unnamed & uncolored votes will result in a "For" (green), "Against" (red), "Abstain" (blue) vote<br><br>If you want to use `/` inside of a label or the text, you can use `-/` to escape into a normal `/`<br><br>_Time is optional_
+Dialogue | <pre>\<name>: \<text> | Marks that someone is speaking<br><br>Can be escaped with a `-` (`<name>-:`) to avoid restructuring
+End | <pre>/\<time> | End of the meeting |
 
 ### Formats
 
 | name | format | example |
 |---|---|---|
-\<vote> | \<label>(\|\<color>)?\<count> | `First Party\|green42`<br>`Third choice22`
+\<vote> | <pre>\<label>(\|\<color>)?\<count> | `First Party\|green42`<br>`Third choice22`
 \<time> | 1-4 numbers | `1312` -> 01:12 pm<br>`650` -> 06:50 pm<br>`21`-> last timed hour:21 (pm/am)<br>`4`-> last timed hour:04 (pm/am)
 \<name> | Name in various formats | `Last Name, First Name`<br>`First Name Last Name`<br>`First Name`<br>`Last Name`<br>`First Name L`<br>`F Last Name`<br>`FL`<br><br>Last name can also start with a royalty connector like "de" or "von"<br><br>`Name 1`,`Name 2` will render with the number after the name, but the number is handled as a last name.<br><br>If you just want your name formatted by `custom-name-format` you can escape the restructuring process with a `-` (`/-<name>`)
