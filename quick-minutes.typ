@@ -934,9 +934,17 @@
           let name = format-name(split.at(0).slice(3))
           arrives-later.insert(name, time)
         } else {
-          let last-time = time-matches.filter(x => x.end < match.start).last().text.slice(0, -1)
+          let time = split.at(0).slice(3)
+          let hours = ""
+          if (time.len() > 2) {
+            hours = time.slice(0, 2)
+          } else {
+            let last-time = time-matches.filter(x => x.end < match.start).last().text.slice(0, -1)
 
-          let time = format-time(split.at(0).slice(3), hours-manual: last-time.slice(0, 2))
+            hours = last-time.slice(0, 2)
+          }
+          let time = format-time(split.at(0).slice(3), hours-manual: hours)
+
           let name = format-name(split.at(1))
           arrives-later.insert(name, time)
         }
