@@ -278,14 +278,6 @@
     ]
   }
 
-  let pretty-name-connect(names) = {
-    if names.len() == 1 {
-      return format-name-no-context(names.at(0))
-    } else {
-      names.slice(0,-1).map(x => format-name-no-context(x)).join(", ") + " & " + format-name-no-context(names.at(-1))
-    }
-  }
-
   let format-name-no-context(name) = {
     // flip names at ","
     if (not name.contains(",") and name.contains(" ")) {
@@ -300,6 +292,14 @@
       name = name-parts.at(-1) + ", " + name-parts.slice(0, -1).join(" ")
     }
     return name
+  }
+
+  let pretty-name-connect(names) = {
+    if names.len() == 1 {
+      return format-name-no-context(names.at(0))
+    } else {
+      names.slice(0,-1).map(x => format-name-no-context(x)).join(", ") + " & " + format-name-no-context(names.at(-1))
+    }
   }
 
   let format-name(name) = {
