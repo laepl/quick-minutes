@@ -49,6 +49,7 @@ With Quick Minutes you can record any meeting event by just typing it out. No fu
 || cosigner-name | Name of the person signing the protocol, should they differ from the chairperson. | `none` | `string`
 | customisation |
 ||
+|| logo | Logo of the body holding the meeting | `none` | `image`
 || custom-name-format | Formatting of names in the document | <pre>(first-name, last-name, numbered) => [<br>&nbsp;#if (numbered) [#first-name #last-name] else [<br>&nbsp;&nbsp;#if (last-name != none) [#last-name, ]#first-name]<br>]</pre> | `function(string)`
 || custom-name-style | Style of names in the document | <pre>(name) => [name] | `function(string)`
 || item-numbering | Numbering of items. Reverts to `DEFAULT_ITEM_NUMBERING` if `none`.  | `none` | `function(..int)`

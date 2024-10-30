@@ -9,12 +9,13 @@
   present: (),
   chairperson: none,
   secretary: none,
+
   awareness: none,
   translation: none,
-
   cosigner: none,
   cosigner-name: none,
 
+  logo: none,
   custom-name-format: (first-name, last-name, numbered) => [
     #if (numbered) [#first-name #last-name] else [
       #if (last-name != none) [#last-name, ]#first-name
@@ -709,21 +710,34 @@
   // Setup
   set page(
     header: [
-      #if (date == none) {
-        [XX.XX.XXXX]
-        add-warning("date is missing", id: "DATE")
-      } else if (date == auto) {
-        [#datetime.today().display(date-format)]
-      }  else if (type(date) == datetime) {
-        [#date.display(date-format)]
-      }else {date}\
-      #if (body-name == none) {
-        [MISSING]
-        add-warning("body-name is missing", id: "BODY")
-      } else {body-name}: #if (event-name == none) {
-        [MISSING]
-        add-warning("event-name is missing", id: "EVENT")
-      } else {event-name}\
+      #grid(
+        columns: if (logo != none) {(auto, 1fr)} else {(1fr)},
+        gutter: 1em,
+        if (logo != none) {
+          set image(
+            height: 3em,
+            fit: "contain",
+          )
+          logo
+        },
+        [
+          #if (date == none) {
+            [XX.XX.XXXX]
+            add-warning("date is missing", id: "DATE")
+          } else if (date == auto) {
+            [#datetime.today().display(date-format)]
+          }  else if (type(date) == datetime) {
+            [#date.display(date-format)]
+          }else {date}\
+          #if (body-name == none) {
+            [MISSING]
+            add-warning("body-name is missing", id: "BODY")
+          } else {body-name}: #if (event-name == none) {
+            [MISSING]
+            add-warning("event-name is missing", id: "EVENT")
+          } else {event-name}\
+        ]
+      )
     ],
     footer: align(center, context {
       let current-page = here().page()
