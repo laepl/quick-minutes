@@ -260,6 +260,11 @@
     let first-name = name
     let last-name = none
     let numbered = false
+
+    if (name.starts-with("%esc%")) {
+      return custom-name-style(name.slice(5))
+    }
+
     if (name.contains(", ")) {
       let split = name.split(", ")
       first-name = split.at(1)
@@ -267,7 +272,7 @@
       numbered = split.at(0).match(regex("[0-9]+")) != none
     }
 
-    return [
+    return box[
       #show "???": set text(fill: red)
       #custom-name-style(custom-name-format(first-name, last-name, numbered))
     ]
@@ -299,7 +304,7 @@
 
   let format-name(name) = {
     if (name.starts-with("-")) {
-      return name.slice(1)
+      return "%esc%" + name.slice(1)
     }
     
     if (not name.contains(",")) {
@@ -426,9 +431,9 @@
       #let status = get-status(name)
       #if (long) {
         if (status == status-away) {
-          add-warning("\"" + name + "\" joined (++), but was just gone for a while (-)")
+          add-warning("\"" + name-format(name) + "\" joined (++), but was just gone for a while (-)")
         } else if (status == status-away-perm) {
-          add-warning("\"" + name + "\" joined (++), but already left permanently (--)")
+          add-warning("\"" + name-format(name) + "\" joined (++), but already left permanently (--)")
         }
         
         pres.update(x => {
@@ -439,11 +444,11 @@
         })
       } else {
         if (status == status-away-perm) {
-          add-warning("\"" + name + "\" joined (+), but already left permanently (--)")
+          add-warning("\"" + name-format(name) + "\" joined (+), but already left permanently (--)")
         } else if (status == status-none) {
-          add-warning("\"" + name + "\" joined (+), but is unaccounted for")
+          add-warning("\"" + name-format(name) + "\" joined (+), but is unaccounted for")
         } else if (status != status-away) {
-          add-warning("\"" + name + "\" joined (+), but was never away (-)")
+          add-warning("\"" + name-format(name) + "\" joined (+), but was never away (-)")
         }
         
         away.update(x => {
@@ -483,11 +488,11 @@
       #let status = get-status(name)
       #if (long) {
         if (status == status-away-perm) {
-          add-warning("\"" + name + "\" left (--), but already left permanently (--)")
+          add-warning("\"" + name-format(name) + "\" left (--), but already left permanently (--)")
         } else if (status != status-present) {
-          add-warning("\"" + name + "\" left (--), but was not present (+)")
+          add-warning("\"" + name-format(name) + "\" left (--), but was not present (+)")
         } else if (status == status-none) {
-          add-warning("\"" + name + "\" left (--), but is unaccounted for")
+          add-warning("\"" + name-format(name) + "\" left (--), but is unaccounted for")
         }
         
         away.update(x => {
@@ -510,13 +515,13 @@
         })
       } else {
         if (status == status-away) {
-          add-warning("\"" + name + "\" left (-), but was away anyways (-)")
+          add-warning("\"" + name-format(name) + "\" left (-), but was away anyways (-)")
         } else if (status == status-away-perm) {
-          add-warning("\"" + name + "\" left (-), but already left permanently (--)")
+          add-warning("\"" + name-format(name) + "\" left (-), but already left permanently (--)")
         } else if (status != status-present) {
-          add-warning("\"" + name + "\" left (-), but was not present (+)")
+          add-warning("\"" + name-format(name) + "\" left (-), but was not present (+)")
         } else if (status == status-none) {
-          add-warning("\"" + name + "\" left (-), but is unaccounted for")
+          add-warning("\"" + name-format(name) + "\" left (-), but is unaccounted for")
         }
         
         pres.update(x => {
@@ -1024,11 +1029,11 @@
         
         let status = get-status(name)
         if (status == status-away) {
-          add-warning("\"" + name + "\" spoke, but was away (-)")
+          add-warning("\"" + name-format(name) + "\" spoke, but was away (-)")
         } else if (status == status-away-perm) {
-          add-warning("\"" + name + "\" spoke, but left (--)")
+          add-warning("\"" + name-format(name) + "\" spoke, but left (--)")
         } else if (status == status-none) {
-          add-warning("\"" + name + "\" spoke, but is unaccounted for")
+          add-warning("\"" + name-format(name) + "\" spoke, but is unaccounted for")
         }
       }
     }
@@ -1044,15 +1049,18 @@
       
         name = format-name(name)
         
+        if (it.text.at(0) != "/") {
+          it.text.at(0)
+        }
         name-format(name)
       
         let status = get-status(name)
         if (status == status-away) {
-          add-warning("\"" + name + "\" was mentioned, but was away (-)")
+          add-warning("\"" + name-format(name) + "\" was mentioned, but was away (-)")
         } else if (status == status-away-perm) {
-          add-warning("\"" + name + "\" was mentioned, but left (--)")
+          add-warning("\"" + name-format(name) + "\" was mentioned, but left (--)")
         } else if (status == status-none) {
-          add-warning("\"" + name + "\" was mentioned, but is unaccounted for")
+          add-warning("\"" + name-format(name) + "\" was mentioned, but is unaccounted for")
         }
       }
     }
