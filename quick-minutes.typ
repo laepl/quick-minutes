@@ -783,42 +783,49 @@
 
   set heading(outlined: false, numbering: (..nums) => {
     nums = nums.pos()
-    nums.at(0) = int(nums.at(0) / 2)
+    nums = nums.map(x => int(x / 2))
     item-numbering(..nums)
   })
   show heading: set text (12pt)
-  show heading: it => [
-    #if (it.body.has("children")) [
-      #let it-text = it.body.children.map(i => i.text).join()
-      #if (it-text.match(regex(regex-time-format + "/")) != none) [
-        #let time = it-text.split("/").at(0)
-        #let title = it-text.split("/").slice(1).join("/\u{200B}")
-        #timed(time , heading(level: it.level, title))
-      ] else [
-        #it-text
-      ]
-    ] else if (it.body.text.match(regex(regex-time-format + "/")) != none) [
-      #let time = it.body.text.split("/").at(0)
-      #let title = it.body.text.split("/").slice(1).join("/\u{200B}")
-      #timed(time , heading(level: it.level, title))
-    ] else if (it.body.text.at(0) == "\u{200B}") [
+  show heading: it => {
+    let text = if (it.body.has("children")) {
+      it.body.children.map(i => i.text).join()
+    } else {
+      it.body.text
+    }
+
+    if (text.starts-with("\u{200B}")) {
+      [#it]
+      return
+    }
+
+    let (time, title) = if (text.match(regex(regex-time-format + "/")) != none) {
+      (text.split("/").at(0), text.split("/").at(1))
+    } else {
+      (none, text)
+    }
+    title = heading("\u{200B}" + title, level: it.level, outlined: it.level != 4 and it.body.text != translate("SCHEDULE"), numbering: if (it.level >= 4) {none} else {it.numbering})
+    
+    let heading = if (time == none) {
+      title
+    } else {
+      timed(time, title)
+    }
+    [
       #if (separator-lines and (it.level == 1 or it.level == 4)) {
         grid(
           columns: (auto, 1fr),
           align: horizon,
           gutter: 1em,
-          it,
+          heading,
           line(length: 100%, stroke: 0.2pt),
         )
       } else {
-        it
+        heading
       }
-    ] else [
-      #set heading(outlined: it.level != 4 and it.body.text != translate("SCHEDULE"), numbering: if (it.level >= 4) {none} else {it.numbering})
-      #heading(level: it.level, "\u{200B}" + it.body.text)
       #v(0.5em)
     ]
-  ]
+  }
 
   // Protokollkopf
   [
