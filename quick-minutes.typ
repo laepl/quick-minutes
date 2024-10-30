@@ -975,7 +975,7 @@
     }
 
     #if (number-present) [
-      *#translate("PRESENT_COUNT")*: #present.len()
+      *#translate("PRESENT_COUNT")*: #present.len()\
     ]
     #context {
       let start-time = start-time.final()
