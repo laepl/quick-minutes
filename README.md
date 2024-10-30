@@ -6,7 +6,7 @@ With Quick Minutes you can record any meeting event by just typing it out. No fu
 
 ### Import & Initialisation
 ```typ
-#import "@preview/quick-minutes:1.1.1": *
+#import "@preview/quick-minutes:1.1.2": *
 
 #show: minutes.with(
   chairperson: "Name 1",
