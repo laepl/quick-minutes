@@ -721,6 +721,38 @@
     }
   ]
 
+  show regex("(.)?/" + regex-name-format): it => {
+    context {
+      let text = if (it.text.starts-with("\u{200b}")) {
+        it.text.slice(3)
+      } else {
+        it.text
+      }
+      if (not (text.at(0) == "/" or text.slice(0, 2) == " /")) {
+        it
+        return
+      }
+
+      let name = text.slice(if (text.at(0) == "/") {1} else {2})
+    
+      name = format-name(name)
+      
+      if (text.at(0) != "/") {
+        text.at(0)
+      }
+      name-format(name)
+    
+      let status = get-status(name)
+      if (status == status-away) {
+        add-warning("\"" + name-format(name) + "\" was mentioned, but was away (-)")
+      } else if (status == status-away-perm) {
+        add-warning("\"" + name-format(name) + "\" was mentioned, but left (--)")
+      } else if (status == status-none) {
+        add-warning("\"" + name-format(name) + "\" was mentioned, but is unaccounted for")
+      }
+    }
+  }
+
   // Setup
   set page(
     header: [
@@ -789,7 +821,7 @@
   show heading: set text (12pt)
   show heading: it => {
     let text = if (it.body.has("children")) {
-      it.body.children.map(i => i.text).join()
+      it.body.children.map(i => if (i.has("text")) {i.text} else {" "}).join()
     } else {
       it.body.text
     }
@@ -800,11 +832,11 @@
     }
 
     let (time, title) = if (text.match(regex(regex-time-format + "/")) != none) {
-      (text.split("/").at(0), text.split("/").at(1))
+      (text.split("/").at(0), text.split("/").slice(1).join("/"))
     } else {
       (none, text)
     }
-    title = heading("\u{200B}" + title, level: it.level, outlined: it.level != 4 and it.body.text != translate("SCHEDULE"), numbering: if (it.level >= 4) {none} else {it.numbering})
+    title = heading("\u{200B}" + title, level: it.level, outlined: it.level != 4 and text != translate("SCHEDULE"), numbering: if (it.level >= 4) {none} else {it.numbering})
     
     let heading = if (time == none) {
       title
@@ -1049,33 +1081,6 @@
           add-warning("\"" + name-format(name) + "\" spoke, but left (--)")
         } else if (status == status-none) {
           add-warning("\"" + name-format(name) + "\" spoke, but is unaccounted for")
-        }
-      }
-    }
-  
-    show regex("(.)?/" + regex-name-format): it => {
-      context {
-        if (not (it.text.at(0) == "/" or it.text.slice(0,2) == " /")) {
-          it
-          return
-        }
-
-        let name = it.text.slice(if (it.text.at(0) == "/") {1} else {2})
-      
-        name = format-name(name)
-        
-        if (it.text.at(0) != "/") {
-          it.text.at(0)
-        }
-        name-format(name)
-      
-        let status = get-status(name)
-        if (status == status-away) {
-          add-warning("\"" + name-format(name) + "\" was mentioned, but was away (-)")
-        } else if (status == status-away-perm) {
-          add-warning("\"" + name-format(name) + "\" was mentioned, but left (--)")
-        } else if (status == status-none) {
-          add-warning("\"" + name-format(name) + "\" was mentioned, but is unaccounted for")
         }
       }
     }
