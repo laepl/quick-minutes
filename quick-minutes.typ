@@ -1106,47 +1106,49 @@
   help-text()
   
   if (signing) {
-    v(3cm)
-    [#translate("SIGNATURE_PRE"):]
-    
-    v(1cm)
-    grid(
-      columns: (1fr, 1fr, 1fr),
-      align: center,
-      gutter: 0.65em,
-      line(length: 100%, stroke: 0.5pt),
-      line(length: 100%, stroke: 0.5pt),
-      line(length: 100%, stroke: 0.5pt),
-      [#translate("PLACE_DATE")],
-      [#translate("SIGNATURE") #if (cosigner == none) [#translate("CHAIR")] else [#cosigner]],
-      [#translate("SIGNATURE") #translate("PROTOCOL")],
-      [],
-      if (cosigner == none) {
-        if (chairperson == none) {
-          name-format("MISSING")
-        } else if (type(chairperson) == "string") {
-          name-format(chairperson)
-        } else { 
-          chairperson.map(x => name-format(x)).join("\n")
-        }
-      } else {
-        name-format(
-          if (cosigner-name == none) {
-            "MISSING"
-            add-warning("cosigner-name is missing")
-          } else {
-            cosigner-name
+    block(breakable: false)[
+      #v(3cm)
+      [#translate("SIGNATURE_PRE"):]
+      
+      #v(1cm)
+      #grid(
+        columns: (1fr, 1fr, 1fr),
+        align: center,
+        gutter: 0.65em,
+        line(length: 100%, stroke: 0.5pt),
+        line(length: 100%, stroke: 0.5pt),
+        line(length: 100%, stroke: 0.5pt),
+        [#translate("PLACE_DATE")],
+        [#translate("SIGNATURE") #if (cosigner == none) [#translate("CHAIR")] else [#cosigner]],
+        [#translate("SIGNATURE") #translate("PROTOCOL")],
+        [],
+        if (cosigner == none) {
+          if (chairperson == none) {
+            name-format("MISSING")
+          } else if (type(chairperson) == "string") {
+            name-format(chairperson)
+          } else { 
+            chairperson.map(x => name-format(x)).join("\n")
           }
-        )
-      },
-      if (secretary == none) {
-        name-format("MISSING")
-      } else if (type(secretary) == "string") {
-        name-format(secretary)
-      } else { 
-        secretary.map(x => name-format(x)).join("\n")
-      },
-    )
+        } else {
+          name-format(
+            if (cosigner-name == none) {
+              "MISSING"
+              add-warning("cosigner-name is missing")
+            } else {
+              cosigner-name
+            }
+          )
+        },
+        if (secretary == none) {
+          name-format("MISSING")
+        } else if (type(secretary) == "string") {
+          name-format(secretary)
+        } else { 
+          secretary.map(x => name-format(x)).join("\n")
+        },
+      )
+    ]
   }
 
   //Hinweise
