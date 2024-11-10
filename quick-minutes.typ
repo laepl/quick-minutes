@@ -16,6 +16,10 @@
   cosigner-name: none,
 
   logo: none,
+  custom-header: auto,
+  custom-footer: auto,
+  custom-background: auto,
+  custom-head-section: auto,
   custom-name-format: (first-name, last-name, numbered) => [
     #if (numbered) [#first-name #last-name] else [
       #if (last-name != none) [#last-name, ]#first-name
@@ -296,9 +300,9 @@
 
   let pretty-name-connect(names) = {
     if names.len() == 1 {
-      return format-name-no-context(names.at(0))
+      return name-format(format-name-no-context(names.at(0)))
     } else {
-      names.slice(0,-1).map(x => format-name-no-context(x)).join(", ") + " & " + format-name-no-context(names.at(-1))
+      names.slice(0,-1).map(x => name-format(format-name-no-context(x))).join(custom-name-style(", ")) + custom-name-style(" & ") + name-format(format-name-no-context(names.at(-1)))
     }
   }
 
@@ -755,55 +759,73 @@
 
   // Setup
   set page(
-    header: [
-      #grid(
-        columns: if (logo != none) {(auto, 1fr)} else {(1fr)},
-        gutter: 1em,
-        if (logo != none) {
-          set image(
-            height: 3em,
-            fit: "contain",
-          )
-          logo
-        },
-        [
-          #if (date == none) {
-            [XX.XX.XXXX]
-            add-warning("date is missing", id: "DATE")
-          } else if (date == auto) {
-            [#datetime.today().display(date-format)]
-          }  else if (type(date) == datetime) {
-            [#date.display(date-format)]
-          }else {date}\
-          #if (body-name == none) {
-            [MISSING]
-            add-warning("body-name is missing", id: "BODY")
-          } else {body-name}: #if (event-name == none) {
-            [MISSING]
-            add-warning("event-name is missing", id: "EVENT")
-          } else {event-name}\
-        ]
-      )
-    ],
-    footer: align(center, context {
+    header: {
+      let formatted-date = if (date == none) {
+        [XX.XX.XXXX]
+        add-warning("date is missing", id: "DATE")
+      } else if (date == auto) {
+        [#datetime.today().display(date-format)]
+      }  else if (type(date) == datetime) {
+        [#date.display(date-format)]
+      } else {[#date]}
+
+      let formatted-body-name = if (body-name == none) {
+        [MISSING]
+        add-warning("body-name is missing", id: "BODY")
+      } else {[#body-name]}
+
+      let formatted-event-name = if (event-name == none) {
+        [MISSING]
+        add-warning("event-name is missing", id: "EVENT")
+      } else {[#event-name]}
+
+      if (custom-header == auto) {
+        grid(
+          columns: if (logo != none) {(auto, 1fr)} else {(1fr)},
+          gutter: 1em,
+          if (logo != none) {
+            set image(
+              height: 3em,
+              fit: "contain",
+            )
+            logo
+          },
+          [
+            #formatted-date\
+            #formatted-body-name: #formatted-event-name\
+          ]
+        )
+      } else if (custom-header != none) {
+        custom-header(formatted-date, formatted-body-name, formatted-event-name, logo, translate)
+      }
+    },
+    footer: context {
       let current-page = here().page()
       let page-count = counter(page).final().first() - if (warnings.final().len() > 0) {1} else {0}
-      [#translate("PAGE", current-page, page-count)]
-    }),
+      if (custom-footer == auto) {
+        align(center, [#translate("PAGE", current-page, page-count)])
+      } else if (custom-footer != none) {
+        custom-footer(current-page, page-count, translate)
+      }
+    },
     margin: (
       left: 4cm,
       right: 2cm,
       top: 3cm,
       bottom: 6cm,
     ),
-    background: (
-      if (hole-mark) {
-        place(left + top, dx: 5mm, dy: 100% / 2, line(
-          length: 4mm,
-          stroke: 0.25pt + black
-        ))
+    background: 
+      if (custom-background == auto) {
+        if (hole-mark) {
+          place(left + top, dx: 5mm, dy: 100% / 2, line(
+            length: 4mm,
+            stroke: 0.25pt + black
+          ))
+        }
+      } else if (custom-background != none) {
+        custom-background(hole-mark)
       }
-    ),
+    ,
   )
   
   set text(
@@ -860,93 +882,94 @@
   }
 
   // Protokollkopf
-  [
-    *#translate("CHAIR")*: #if (chairperson == none) {
-      name-format("MISSING")
-      add-warning("chairperson is missing")
-    } else if (type(chairperson) == "string") {
-      format-name-no-context(chairperson)
-    } else { 
-      pretty-name-connect(chairperson)
-    }\
-    *#translate("PROTOCOL")*: #if (secretary == none) {
-      name-format("MISSING")
-      add-warning("secretary is missing")
-    } else if (type(secretary) == "string") {
-      format-name-no-context(secretary)
-    } else { 
-      pretty-name-connect(secretary)
-    }
-    #if awareness != none [
-      \ *#translate("AWARENESS")*: #if (type(awareness) == "string") {
-        name-format(awareness)
-      } else { 
-        pretty-name-connect(awareness)
+  
+  let old-present = present
+  let present = present.map(x => format-name-no-context(x))
+  if (awareness != none) {
+    if (type(awareness) == "string") {
+      awareness = format-name-no-context(awareness)
+      if (not present.contains(awareness)) {
+        present.insert(0, awareness)
       }
-    ]
-    #if translation != none [
-      \ *#translate("TRANSLATION")*: #if (type(translation) == "string") {
-        format-name-no-context(translation)
-      } else { 
-        pretty-name-connect(translation)
-      }
-    ] \
-    #let old-present = present
-    #let present = present.map(x => format-name-no-context(x))
-    #if (awareness != none) {
-      if (type(awareness) == "string") {
-        awareness = format-name-no-context(awareness)
-        if (not present.contains(awareness)) {
-          present.insert(0, awareness)
-        }
-      } else {
-        for person in awareness {
-          person = format-name-no-context(person)
-          if (not present.contains(person)) {
-            present.insert(0, person)
-          }
+    } else {
+      for person in awareness {
+        person = format-name-no-context(person)
+        if (not present.contains(person)) {
+          present.insert(0, person)
         }
       }
     }
-    #if (secretary != none) {
-      secretary = format-name-no-context(secretary)
-      if (type(secretary) == "string") {
-        if (not present.contains(secretary)) {
-          present.insert(0, secretary)
-        }
-      } else {
-        for person in secretary {
-          person = format-name-no-context(person)
-          if (not present.contains(person)) {
-            present.insert(0, person)
-          }
+  }
+  if (secretary != none) {
+    secretary = format-name-no-context(secretary)
+    if (type(secretary) == "string") {
+      if (not present.contains(secretary)) {
+        present.insert(0, secretary)
+      }
+    } else {
+      for person in secretary {
+        person = format-name-no-context(person)
+        if (not present.contains(person)) {
+          present.insert(0, person)
         }
       }
     }
-    #if (chairperson != none) {
-      chairperson = format-name-no-context(chairperson)
-      if (type(chairperson) == "string") {
-        if (not present.contains(chairperson)) {
-          present.insert(0, chairperson)
-        }
-      } else {
-        for person in chairperson {
-          person = format-name-no-context(person)
-          if (not present.contains(person)) {
-            present.insert(0, person)
-          }
+  }
+  if (chairperson != none) {
+    chairperson = format-name-no-context(chairperson)
+    if (type(chairperson) == "string") {
+      if (not present.contains(chairperson)) {
+        present.insert(0, chairperson)
+      }
+    } else {
+      for person in chairperson {
+        person = format-name-no-context(person)
+        if (not present.contains(person)) {
+          present.insert(0, person)
         }
       }
     }
-    
-    #if (present.dedup().len() != present.len()) {
-      add-warning("multiple people with the same name are present")
-    }
-    
-    *#translate("PRESENT")*:
-    #v(-0.5em)
-    
+  }
 
+  let formatted-chairperson = if (chairperson == none) [
+    #custom-name-style("MISSING")
+    #add-warning("chairperson is missing")
+  ] else if (type(chairperson) == "string") {
+    [#name-format(format-name-no-context(chairperson))]
+  } else { 
+    [#pretty-name-connect(chairperson)]
+  }
+
+  let formatted-secretary = if (secretary == none) [
+    #custom-name-style("MISSING")
+    #add-warning("secretary is missing")
+  ] else if (type(secretary) == "string") {
+    [#name-format(format-name-no-context(secretary))]
+  } else { 
+    [#pretty-name-connect(secretary)]
+  }
+
+  let formatted-awareness = if (awareness == none) {
+    none
+  } else {
+    if (type(awareness) == "string") {
+      [#name-format(format-name-no-context(awareness))]
+    } else { 
+      [#pretty-name-connect(awareness)]
+    }
+  }
+
+  let formatted-translation = if (translation == none) {
+    none
+  } else {
+    if (type(translation) == "string") {
+      [#name-format(format-name-no-context(translation))]
+    } else { 
+      [#pretty-name-connect(translation)]
+    }
+  }
+  
+  let formatted-present = [
     #let body-string = body.children.map(i => {
       let body = if (i.has("body")) {i.body} else {i}
       
@@ -995,7 +1018,6 @@
       #grid(
         columns: calc.min(2, calc.ceil(present.len() / 10)) * (1fr,),
         row-gutter: 0.65em,
-        inset: (left: 1em),
         ..present.map(x => {
           name-format(x)
           if (show-arrival-time and arrives-later.keys().contains(x)) {
@@ -1009,29 +1031,75 @@
       )
     ]
     
+    #if (present.dedup().len() != present.len()) {
+      add-warning("multiple people with the same name are present")
+    }
+
     #if (old-present == ()) {
       add-warning("present not set")
     }
+  ]
 
-    #if (number-present) [
-      *#translate("PRESENT_COUNT")*: #present.len()\
-    ]
-    #context {
-      let start-time = start-time.final()
-      if (start-time != none) [*#translate("START")*: #four-digits-to-time(start-time)\ ]
+  let formatted-present-count = if (number-present) {
+    present.len()
+  } else {
+    none
+  }
+
+  if (custom-head-section == auto) {
+    [
+      *#translate("CHAIR")*: #formatted-chairperson\
+      *#translate("PROTOCOL")*: #formatted-secretary
+      #if formatted-awareness != none [
+        \ *#translate("AWARENESS")*: #formatted-awareness
+      ]
+      #if formatted-translation != none [
+        \ *#translate("TRANSLATION")*: #formatted-translation
+      ] \
       
-      let end-time = last-time.final()
-      if (end-time != none) [*#translate("END")*: #four-digits-to-time(end-time)]
-    }
-  ]
+      
+      *#translate("PRESENT")*:
+      #v(-0.5em)
 
-  pad(y: 1.5em)[
-    #show outline.entry.where(level: 1): it => {
-      v(0em)
-      it
-    }
-    #outline(title: translate("SCHEDULE"), indent: 1em)
-  ]
+      #pad(left: 1em)[
+        #formatted-present
+      ]
+      
+      #if (formatted-present-count != none) [
+        *#translate("PRESENT_COUNT")*: #formatted-present-count\
+      ]
+
+      #context {
+        let start-time = start-time.final()
+        if (start-time != none) [*#translate("START")*: #four-digits-to-time(start-time)\ ]
+        
+        let end-time = last-time.final()
+        if (end-time != none) [*#translate("END")*: #four-digits-to-time(end-time)]
+      }
+    ]
+
+    pad(y: 1.5em)[
+      #show outline.entry.where(level: 1): it => {
+        v(0em)
+        it
+      }
+      #outline(title: translate("SCHEDULE"), indent: 1em)
+    ]
+  } else if (custom-head-section != none) {
+    custom-head-section(
+      formatted-chairperson,
+      formatted-secretary,
+      formatted-awareness,
+      formatted-translation,
+      formatted-present,
+      formatted-present-count,
+      start-time,
+      last-time,
+      translate,
+      four-digits-to-time,
+    )
+  }
+
   if (title-page) {
     pagebreak()
   }
