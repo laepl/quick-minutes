@@ -1189,7 +1189,7 @@
   if (signing) {
     block(breakable: false)[
       #v(3cm)
-      [#translate("SIGNATURE_PRE"):]
+      #translate("SIGNATURE_PRE"):
       
       #v(1cm)
       #grid(
