@@ -7,6 +7,7 @@
   event-name: none,
   date: none,
   present: (),
+  not-voting: (),
   chairperson: none,
   secretary: none,
 
@@ -426,6 +427,10 @@
     }
     return status-none
   }
+
+  let without-not-voting(list) = {
+    return list.filter(x => not (not-voting.map(x => format-name-no-context(x)).contains(x)))
+  }
   
   // Inline functions
   let join(time, name, long: false) = [
@@ -472,7 +477,7 @@
     #context [
       #let name = format-name(name)
       #let statement = [
-        _#name-format(name) #translate("JOIN" + if (long) {"_LONG"}, str(pres.get().len() - away.get().len()), str(pres.get().len()))_
+        _#name-format(name) #translate("JOIN" + if (long) {"_LONG"}, str(without-not-voting(pres.get()).len()), str(without-not-voting(pres.get()).len() + without-not-voting(away.get()).len()))_
       ]
 
       #if (time == none) {
@@ -545,7 +550,7 @@
     #context [  
       #let name = format-name(name)
       #let statement = [
-        _#name-format(name) #translate("LEAVE" + if (long) {"_LONG"}, str(pres.get().len()), str(pres.get().len() + away.get().len()))_
+        _#name-format(name) #translate("LEAVE" + if (long) {"_LONG"}, str(without-not-voting(pres.get()).len()), str(without-not-voting(pres.get()).len() + without-not-voting(away.get()).len()))_
       ]
 
       #if (time == none) {
@@ -609,8 +614,8 @@
         #values.map(x => [*#x.name*: #str(x.value)]).join([, ])
       ]
       #context [
-        #if (total != pres.get().len()) {
-          add-warning(str(total) + " people voted, but " + str(pres.get().len()) + " were present", display: true)
+        #if (total != without-not-voting(pres.get()).len()) {
+          add-warning(str(total) + " people voted, but " + str(without-not-voting(pres.get()).len()) + " were present", display: true)
         }
       ]
     ]
@@ -884,6 +889,7 @@
   // Protokollkopf
   
   let old-present = present
+  let present = present + not-voting
   let present = present.map(x => format-name-no-context(x))
   if (awareness != none) {
     if (type(awareness) == "string") {
@@ -1026,6 +1032,9 @@
             } else {
               [ (#translate("SINCE") #box[#arrives-later.at(x)])]
             }
+          }
+          if (not-voting.map(x => format-name-no-context(x)).contains(x)) {
+            [ (#translate("NOT_VOTING"))]
           }
         })
       )

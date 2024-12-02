@@ -15,6 +15,10 @@
     "en": "during the event",
     "de": "später dazugekommen"
   },
+  "NOT_VOTING": {
+    "en": "not voting",
+    "de": "nicht stimmberechtigt"
+  },
   "DEFAULT_TIME_FORMAT": {
     "en": "[hour repr:12]:[minute] [period case:lower]",
     "de": "[hour]:[minute] Uhr"
