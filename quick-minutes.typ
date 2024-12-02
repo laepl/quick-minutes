@@ -891,6 +891,7 @@
   let old-present = present
   let present = present + not-voting
   let present = present.map(x => format-name-no-context(x))
+  let present = present.sorted(key: x => upper(x))
   if (awareness != none) {
     if (type(awareness) == "string") {
       awareness = format-name-no-context(awareness)

@@ -17,7 +17,7 @@
   },
   "NOT_VOTING": {
     "en": "not voting",
-    "de": "nicht stimmberechtigt"
+    "de": "kein Stimmrecht"
   },
   "DEFAULT_TIME_FORMAT": {
     "en": "[hour repr:12]:[minute] [period case:lower]",
