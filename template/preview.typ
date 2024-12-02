@@ -1,4 +1,4 @@
-#import "@preview/quick-minutes:1.2.0": *
+#import "@preview/quick-minutes:1.2.1": *
 
 #show: minutes.with(
   locale: "de",
