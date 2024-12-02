@@ -1135,10 +1135,12 @@
 
   //Hauptteil
   {
-    show regex("(.)?" + regex-name-format + "[^-]: "): it => {
+    show regex("(.)?" + regex-name-format + "[^-]: [^\n]*"): it => {
       context {
         let break-line = it.text.at(0) == " "
-        let name = it.text.slice(if (break-line) {1} else {0}, -2)
+        let text = it.text.slice(if (break-line) {1} else {0})
+        let name = text.split(": ").at(0)
+        let text = text.split(": ").slice(1).join(": ")
         
         name = format-name(name)
         
@@ -1151,6 +1153,7 @@
           
           name-format(name) + ": "
         }
+        text
         
         let status = get-status(name)
         if (status == status-away) {
