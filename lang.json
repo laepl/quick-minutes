@@ -5,7 +5,7 @@
   },
   "ITEM": {
     "en": "Item",
-    "de": "TOP"
+    "de": "Punkt"
   },
   "SINCE": {
     "en": "since",
@@ -28,11 +28,11 @@
     "de": "[day].[month].[year]"
   },
   "CHAIR": {
-    "en": "Chairperson",
-    "de": "Sitzungsvorsitz"
+    "en": "Project lead",
+    "de": "Projektleitung"
   },
   "PROTOCOL": {
-    "en": "Secretary",
+    "en": "Protocol",
     "de": "Protokoll"
   },
   "AWARENESS": {
@@ -53,15 +53,15 @@
   },
   "START": {
     "en": "Start of meeting",
-    "de": "Beginn der Sitzung"
+    "de": "Beginn des Meetings"
   },
   "END": {
     "en": "End of meeting",
-    "de": "Ende der Sitzung"
+    "de": "Ende des Meetings"
   },
   "SCHEDULE": {
     "en": "Schedule",
-    "de": "Tagesordnung"
+    "de": "Themen"
   },
   "DECISION": {
     "en": "Vote",
