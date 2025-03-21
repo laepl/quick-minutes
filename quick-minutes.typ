@@ -49,6 +49,10 @@
   warning-color: red,
   enable-help-text: false,
   
+  show-chairperson: true,
+  show-secretary: true,
+  show-start-end: false,
+
   body
 ) = {
   // Constants
@@ -786,19 +790,26 @@
 
       if (custom-header == auto) {
         grid(
-          columns: if (logo != none) {(auto, 1fr)} else {(1fr)},
+          columns: if (logo != none) {(1fr, auto)} else {(1fr)},
+          align: horizon,
           gutter: 1em,
+          [
+            #formatted-date -- 
+            #context {
+              let start-time = start-time.final()
+              if (start-time != none) [#four-digits-to-time(start-time) bis ]
+              let end-time = last-time.final()
+              if (end-time != none) [#four-digits-to-time(end-time)]
+            }\
+            *#formatted-body-name*: #formatted-event-name\
+          ],
           if (logo != none) {
             set image(
-              height: 3em,
+              height: 4em,
               fit: "contain",
             )
             logo
-          },
-          [
-            #formatted-date\
-            #formatted-body-name: #formatted-event-name\
-          ]
+          }
         )
       } else if (custom-header != none) {
         custom-header(formatted-date, formatted-body-name, formatted-event-name, logo, translate)
@@ -817,7 +828,7 @@
       left: 4cm,
       right: 2cm,
       top: 3cm,
-      bottom: 6cm,
+      bottom: 3cm,
     ),
     background: 
       if (custom-background == auto) {
@@ -845,7 +856,7 @@
     nums = nums.map(x => int(x / 2))
     item-numbering(..nums)
   })
-  show heading: set text (12pt)
+  show heading: set text(12pt)
   show heading: it => {
     let text = if (it.body.has("children")) {
       it.body.children.map(i => if (i.has("text")) {i.text} else {" "}).join()
@@ -909,7 +920,7 @@
   }
   if (secretary != none) {
     secretary = format-name-no-context(secretary)
-    if (type(secretary) == "string") {
+    if (type(secretary) == str) {
       if (not present.contains(secretary)) {
         present.insert(0, secretary)
       }
@@ -924,7 +935,7 @@
   }
   if (chairperson != none) {
     chairperson = format-name-no-context(chairperson)
-    if (type(chairperson) == "string") {
+    if (type(chairperson) == str) {
       if (not present.contains(chairperson)) {
         present.insert(0, chairperson)
       }
@@ -941,7 +952,7 @@
   let formatted-chairperson = if (chairperson == none) [
     #custom-name-style("MISSING")
     #add-warning("chairperson is missing")
-  ] else if (type(chairperson) == "string") {
+  ] else if (type(chairperson) == str) {
     [#name-format(format-name-no-context(chairperson))]
   } else { 
     [#pretty-name-connect(chairperson)]
@@ -950,7 +961,7 @@
   let formatted-secretary = if (secretary == none) [
     #custom-name-style("MISSING")
     #add-warning("secretary is missing")
-  ] else if (type(secretary) == "string") {
+  ] else if (type(secretary) == str) {
     [#name-format(format-name-no-context(secretary))]
   } else { 
     [#pretty-name-connect(secretary)]
@@ -1058,16 +1069,19 @@
 
   if (custom-head-section == auto) {
     [
-      *#translate("CHAIR")*: #formatted-chairperson\
-      *#translate("PROTOCOL")*: #formatted-secretary
+      #if show-chairperson == true [
+        *#translate("CHAIR")*: #formatted-chairperson \
+      ]
+      #if show-secretary == true [
+        *#translate("PROTOCOL")*: #formatted-secretary
+      ]
       #if formatted-awareness != none [
         \ *#translate("AWARENESS")*: #formatted-awareness
       ]
       #if formatted-translation != none [
         \ *#translate("TRANSLATION")*: #formatted-translation
-      ] \
-      
-      
+      ] 
+            
       *#translate("PRESENT")*:
       #v(-0.5em)
 
@@ -1078,14 +1092,16 @@
       #if (formatted-present-count != none) [
         *#translate("PRESENT_COUNT")*: #formatted-present-count\
       ]
-
-      #context {
-        let start-time = start-time.final()
-        if (start-time != none) [*#translate("START")*: #four-digits-to-time(start-time)\ ]
-        
-        let end-time = last-time.final()
-        if (end-time != none) [*#translate("END")*: #four-digits-to-time(end-time)]
-      }
+      #if show-start-end == true [
+        // show start and end time separately
+        #context {
+          let start-time = start-time.final()
+          if (start-time != none) [*#translate("START")*: #four-digits-to-time(start-time)\ ]
+          
+          let end-time = last-time.final()
+          if (end-time != none) [*#translate("END")*: #four-digits-to-time(end-time)]
+        }
+      ]
     ]
 
     pad(y: 1.5em)[
@@ -1113,14 +1129,15 @@
   if (title-page) {
     pagebreak()
   }
-  context {
-    let start-time = start-time.final()
-    if (start-time == none) {
-      timed([], [==== #translate("START")])
-    } else {
-      timed([#four-digits-to-time(start-time)], [==== #translate("START")])
-    }
-  }
+  // show extra line with for start of meeting
+  // context {
+  //   let start-time = start-time.final()
+  //   if (start-time == none) {
+  //     timed([], [==== #translate("START")])
+  //   } else {
+  //     timed([#four-digits-to-time(start-time)], [==== #translate("START")])
+  //   }
+  // }
   
   set par.line(
     numbering: x => {
